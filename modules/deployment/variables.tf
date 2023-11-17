@@ -87,3 +87,9 @@ variable "ecr_image_tag" {
   description = "Tag of the new image pushed to the Amazon ECR repository to trigger the deployment pipeline."
   type        = string
 }
+
+variable "retention_in_days" {
+  default     = 7
+  description = "Configure the cloudwatch log retention period"
+  type        = number
+}
