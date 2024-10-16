@@ -64,7 +64,7 @@ module "sg" {
 }
 
 resource "aws_security_group_rule" "trusted_egress_attachment" {
-  for_each                 = { for route in local.ingress_targets : "${route["prefix"]}-${route["source_security_group_id"]}" => route }
+  for_each                 = { for route in local.ingress_targets : "${route["prefix"]}-${route["source_security_group_id"]}" => route if var.prevent_destroy == false }
   type                     = "egress"
   from_port                = each.value["from_port"]
   to_port                  = each.value["to_port"]
@@ -251,7 +251,7 @@ module "code_deploy" {
 ##############
 
 resource "aws_appautoscaling_target" "ecs" {
-  count = var.appautoscaling_settings != null ? 1 : 0
+  count = var.appautoscaling_settings != null && var.prevent_destroy == false ? 1 : 0
 
   max_capacity       = lookup(var.appautoscaling_settings, "max_capacity", var.desired_count)
   min_capacity       = lookup(var.appautoscaling_settings, "min_capacity", var.desired_count)
@@ -261,7 +261,7 @@ resource "aws_appautoscaling_target" "ecs" {
 }
 
 resource "aws_appautoscaling_policy" "ecs" {
-  count = var.appautoscaling_settings != null ? 1 : 0
+  count = var.appautoscaling_settings != null && var.prevent_destroy == false ? 1 : 0
 
   name               = "${var.service_name}-auto-scaling"
   policy_type        = "TargetTrackingScaling"

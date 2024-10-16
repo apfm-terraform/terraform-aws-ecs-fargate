@@ -87,7 +87,7 @@ resource "aws_ecs_service" "prevent_destroy" {
 ##############
 
 resource "aws_appautoscaling_target" "ecs_prevent_destroy" {
-  count = var.appautoscaling_settings != null ? 1 : 0
+  count = var.appautoscaling_settings != null && var.prevent_destroy ? 1 : 0
 
   max_capacity       = lookup(var.appautoscaling_settings, "max_capacity", var.desired_count)
   min_capacity       = lookup(var.appautoscaling_settings, "min_capacity", var.desired_count)
@@ -102,7 +102,7 @@ resource "aws_appautoscaling_target" "ecs_prevent_destroy" {
 }
 
 resource "aws_appautoscaling_policy" "ecs_prevent_destroy" {
-  count = var.appautoscaling_settings != null ? 1 : 0
+  count = var.appautoscaling_settings != null && var.prevent_destroy ? 1 : 0
 
   name               = "${var.service_name}-auto-scaling"
   policy_type        = "TargetTrackingScaling"
