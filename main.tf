@@ -87,7 +87,7 @@ resource "aws_ecs_service" "this" {
   platform_version                   = var.platform_version
   propagate_tags                     = "SERVICE"
   tags                               = var.tags
-  task_definition                    = "${aws_ecs_task_definition.this.family}:${max(aws_ecs_task_definition.this.revision, data.aws_ecs_task_definition.this.revision)}"
+  task_definition                    = "${aws_ecs_task_definition.this.family}:${aws_ecs_task_definition.this.revision}"
 
   dynamic "capacity_provider_strategy" {
     for_each = var.capacity_provider_strategy != null ? var.capacity_provider_strategy : []
@@ -198,12 +198,6 @@ resource "aws_ecs_task_definition" "this" {
       }
     }
   }
-}
-
-# Simply specify the family to find the latest ACTIVE revision in that family.
-data "aws_ecs_task_definition" "this" {
-  depends_on      = [aws_ecs_task_definition.this]
-  task_definition = aws_ecs_task_definition.this.family
 }
 
 locals {
